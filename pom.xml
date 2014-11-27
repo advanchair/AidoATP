@@ -90,6 +90,10 @@
 			<groupId>com.xeiam.xchange</groupId>
 			<artifactId>xchange-btce</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.xeiam.xchange</groupId>
+			<artifactId>xchange-cryptsy</artifactId>
+		</dependency>
 <!--		<dependency>
 			<groupId>com.xeiam.xchange</groupId>
 			<artifactId>xchange-mtgox</artifactId>
@@ -125,6 +129,11 @@
 			<dependency>
 				<groupId>com.xeiam.xchange</groupId>
 				<artifactId>xchange-btce</artifactId>
+				<version>2.2.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.xeiam.xchange</groupId>
+				<artifactId>xchange-cryptsy</artifactId>
 				<version>2.2.0-SNAPSHOT</version>
 			</dependency>
 <!--			<dependency>

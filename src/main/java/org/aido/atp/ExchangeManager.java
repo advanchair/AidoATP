@@ -19,14 +19,14 @@
 package org.aido.atp;
 
 import java.util.HashMap;
-import java.lang.reflect.Constructor;
+
+import org.aido.atp.exchanges.ATPBTCeExchange;
+import org.aido.atp.exchanges.ATPCryptsyExchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeSpecification;
-
-import org.aido.atp.exchanges.ATPBTCeExchange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
 * Exchange manager class.
@@ -37,11 +37,8 @@ import org.slf4j.LoggerFactory;
 public class ExchangeManager implements Runnable {
 
 	private static final HashMap<String, String> exchangesHashMap = new HashMap<String, String>(){{
-//		put(ATPMtGoxExchange.getExchangeName(), ATPMtGoxExchange.class.getName());
 		put(ATPBTCeExchange.getExchangeName(), ATPBTCeExchange.class.getName());
-//		put(ATPBitstampExchange.getExchangeName(), ATPBitstampExchange.class.getName());
-//		put(ATPBitcoinCentralExchange.getExchangeName(), ATPBitcoinCentralExchange.class.getName());
-//		put(ATPCampBXExchange.getExchangeName(), ATPCampBXExchange.class.getName());
+		put(ATPCryptsyExchange.getExchangeName(), ATPCryptsyExchange.class.getName());
 		}};
 	private static HashMap<String, ExchangeManager> instances = new HashMap<String, ExchangeManager>();
 	private HashMap<String, Double> asksInARow;
