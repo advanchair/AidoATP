@@ -24,28 +24,28 @@ import java.lang.reflect.Constructor;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeSpecification;
 
-import org.joda.money.CurrencyUnit;
-
+import org.aido.atp.exchanges.ATPBTCeExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
 * Exchange manager class.
 *
-* @author Aido
+* @author Aido, advanchair
 */
 
 public class ExchangeManager implements Runnable {
 
 	private static final HashMap<String, String> exchangesHashMap = new HashMap<String, String>(){{
-		put(ATPMtGoxExchange.getExchangeName(), ATPMtGoxExchange.class.getName());
+//		put(ATPMtGoxExchange.getExchangeName(), ATPMtGoxExchange.class.getName());
 		put(ATPBTCeExchange.getExchangeName(), ATPBTCeExchange.class.getName());
-		put(ATPBitstampExchange.getExchangeName(), ATPBitstampExchange.class.getName());
+//		put(ATPBitstampExchange.getExchangeName(), ATPBitstampExchange.class.getName());
 //		put(ATPBitcoinCentralExchange.getExchangeName(), ATPBitcoinCentralExchange.class.getName());
-		put(ATPCampBXExchange.getExchangeName(), ATPCampBXExchange.class.getName());}};
+//		put(ATPCampBXExchange.getExchangeName(), ATPCampBXExchange.class.getName());
+		}};
 	private static HashMap<String, ExchangeManager> instances = new HashMap<String, ExchangeManager>();
-	private HashMap<CurrencyUnit, Double> asksInARow;
-	private HashMap<CurrencyUnit, Double> bidsInARow;
+	private HashMap<String, Double> asksInARow;
+	private HashMap<String, Double> bidsInARow;
 	private static Logger log;
 	private Exchange exchange;
 	private ExchangeSpecification exchangeSpecification;
@@ -62,8 +62,8 @@ public class ExchangeManager implements Runnable {
 	private ExchangeManager(String exchangeName){
 		this.exchangeName = exchangeName;
 		log = LoggerFactory.getLogger(ExchangeManager.class);
-		asksInARow = new HashMap<CurrencyUnit, Double>();
-		bidsInARow = new HashMap<CurrencyUnit, Double>();
+		asksInARow = new HashMap<String, Double>();
+		bidsInARow = new HashMap<String, Double>();
 	}
 
 	@Override
@@ -119,19 +119,19 @@ public class ExchangeManager implements Runnable {
 		return exchangesHashMap;
 	}
 
-	public HashMap<CurrencyUnit, Double> getAsksInARow() {
+	public HashMap<String, Double> getAsksInARow() {
 		return asksInARow;
 	}
 
-	public void setAsksInARow(HashMap<CurrencyUnit, Double> asksInARow) {
+	public void setAsksInARow(HashMap<String, Double> asksInARow) {
 		this.asksInARow = asksInARow;
 	}
 
-	public HashMap<CurrencyUnit, Double> getBidsInARow() {
+	public HashMap<String, Double> getBidsInARow() {
 		return bidsInARow;
 	}
 
-	public void setBidsInARow(HashMap<CurrencyUnit, Double> bidsInARow) {
+	public void setBidsInARow(HashMap<String, Double> bidsInARow) {
 		this.bidsInARow = bidsInARow;
 	}
 

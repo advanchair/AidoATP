@@ -22,24 +22,29 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.net.Socket;
 
-import org.joda.money.CurrencyUnit;
+import org.aido.atp.Application;
+import org.aido.atp.ExchangeManager;
+import org.aido.atp.TickerManager;
+
+import si.mazi.rescu.HttpStatusIOException;
 
 import com.xeiam.xchange.currency.Currencies;
+import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
 
 /**
 * Polling Ticker Manager class.
 *
-* @author Aido
+* @author Aido, advanchair
 */
 
 public class PollingTickerManager extends TickerManager {
 
 	private String exchangeName;
 	private PollingMarketDataService marketData;
-	private CurrencyUnit currency;
+	private String currency;
 
-	public PollingTickerManager(CurrencyUnit currency, String exchangeName) {
+	public PollingTickerManager(String currency, String exchangeName) {
 		super(currency,exchangeName);
 		this.exchangeName = exchangeName;
 		this.currency = currency;
@@ -53,9 +58,11 @@ public class PollingTickerManager extends TickerManager {
 
 	public void getTick() {
 		try {
-			checkTick(marketData.getTicker(Currencies.BTC, currency.getCurrencyCode()));
+//			checkTick(marketData.getTicker(Currencies.BTC, currency.getCurrencyCode()));
+//TODO implement other tickers
+			checkTick(marketData.getTicker(CurrencyPair.BTC_LTC, currency));
 			TimeUnit.SECONDS.sleep(Integer.parseInt(Application.getInstance().getConfig("PollingInterval")));
-		} catch (com.xeiam.xchange.ExchangeException | si.mazi.rescu.HttpException e) {
+		} catch (com.xeiam.xchange.ExchangeException | HttpStatusIOException e) {
 			Socket testSock = null;
 			while (true) {
 				try {

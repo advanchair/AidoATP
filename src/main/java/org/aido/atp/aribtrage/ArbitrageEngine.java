@@ -25,15 +25,23 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.net.Socket;
 
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
-
+import com.xeiam.xchange.ExchangeException;
+import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.Order.OrderType;
 import com.xeiam.xchange.dto.trade.MarketOrder;
 import com.xeiam.xchange.service.polling.PollingTradeService;
 
+import org.aido.atp.ATPTicker;
+import org.aido.atp.AccountManager;
+import org.aido.atp.Application;
+import org.aido.atp.ExchangeManager;
+import org.aido.atp.ProfitLossAgent;
+import org.aido.atp.WalletNotFoundException;
+import org.aido.atp.migration.MigMoney;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import si.mazi.rescu.HttpStatusIOException;
 
 /**
 * Arbitrage engine class.
@@ -44,11 +52,11 @@ import org.slf4j.LoggerFactory;
 public class ArbitrageEngine implements Runnable {
 	
 	private static HashMap<String, ArbitrageEngine> instances  = new HashMap<String, ArbitrageEngine>();
-	private CurrencyUnit baseCurrency;
+	private String baseCurrency;
 	private double factor;
 	private Logger log;
 	private boolean quit;
-	private HashMap<CurrencyUnit, ATPTicker> lastTickMap;
+	private HashMap<String, ATPTicker> lastTickMap;
 	private String exchangeName;
 
 	public static synchronized ArbitrageEngine getInstance(String exchangeName) {
@@ -62,7 +70,7 @@ public class ArbitrageEngine implements Runnable {
 		this.exchangeName = exchangeName;
 		log = LoggerFactory.getLogger(ArbitrageEngine.class);
 		quit = false;
-		lastTickMap = new HashMap<CurrencyUnit, ATPTicker>();
+		lastTickMap = new HashMap<String, ATPTicker>();
 	}
 	@Override
 	public synchronized void run() {
@@ -72,7 +80,7 @@ public class ArbitrageEngine implements Runnable {
 		try {
 			// V currencies
 			int V = lastTickMap.size();
-			CurrencyUnit[] currArray = lastTickMap.keySet().toArray(new CurrencyUnit[V]);
+			String[] currArray = lastTickMap.keySet().toArray(new String[V]);
 			
 			// create complete network
 			double rate;
@@ -135,7 +143,7 @@ public class ArbitrageEngine implements Runnable {
 			}else {
 				log.info("Arbitrage Engine cannot find an arbitrage opportunity on "+exchangeName+" at this time.");
 			}
-		} catch (com.xeiam.xchange.ExchangeException | si.mazi.rescu.HttpException e) {
+		} catch (ExchangeException | HttpStatusIOException e) {
 			Socket testSock = null;
 			try {
 				log.warn("WARNING: Testing connection to "+exchangeName+" exchange");
@@ -165,12 +173,12 @@ public class ArbitrageEngine implements Runnable {
 	* @param toCurr
 	* @throws WalletNotFoundException
 	*/
-	private synchronized void executeTrade(CurrencyUnit fromCurr, CurrencyUnit toCurr) throws WalletNotFoundException {
+	private synchronized void executeTrade(String fromCurr, String toCurr) throws Exception {
 		
 		PollingTradeService tradeService = ExchangeManager.getInstance(exchangeName).getExchange().getPollingTradeService();
 		
-		BigMoney lastTickAskFrom = lastTickMap.get(fromCurr).getAsk();
-		BigMoney lastTickBidTo = lastTickMap.get(toCurr).getBid();
+		MigMoney lastTickAskFrom = lastTickMap.get(fromCurr).getAsk();
+		MigMoney lastTickBidTo = lastTickMap.get(toCurr).getBid();
 		BigDecimal oneDivFrom = BigDecimal.ONE.divide(lastTickAskFrom.getAmount(),16,RoundingMode.HALF_EVEN);
 		BigDecimal oneDivTo = BigDecimal.ONE.divide(lastTickBidTo.getAmount(),16,RoundingMode.HALF_EVEN);
 		
@@ -179,14 +187,14 @@ public class ArbitrageEngine implements Runnable {
 		log.debug("Last ticker Bid price was "+lastTickBidTo.toString());
 		log.debug("BTC/"+toCurr.toString()+" is "+oneDivTo.toString());
 		
-		BigMoney qtyFrom = AccountManager.getInstance(exchangeName).getBalance(fromCurr);
-		BigMoney qtyFromBTC = qtyFrom.convertedTo(CurrencyUnit.of("BTC"),oneDivFrom);
-		BigMoney qtyTo = qtyFromBTC.convertedTo(toCurr,lastTickBidTo.getAmount());
-		BigMoney qtyToBTC = qtyTo.convertedTo(CurrencyUnit.of("BTC"),oneDivTo);
+		MigMoney qtyFrom = AccountManager.getInstance(exchangeName).getBalance(fromCurr);
+		MigMoney qtyFromBTC = qtyFrom.convertedTo("BTC",oneDivFrom);
+		MigMoney qtyTo = qtyFromBTC.convertedTo(toCurr,lastTickBidTo.getAmount());
+		MigMoney qtyToBTC = qtyTo.convertedTo("BTC",oneDivTo);
 
 		if (!qtyFrom.isZero()){
-			MarketOrder buyOrder  = new MarketOrder(OrderType.BID,qtyFromBTC.getAmount(),"BTC",fromCurr.toString());
-			MarketOrder sellOrder = new MarketOrder(OrderType.ASK,qtyToBTC.getAmount(),"BTC",toCurr.toString());
+			MarketOrder buyOrder  = new MarketOrder(OrderType.BID,qtyFromBTC.getAmount(), new CurrencyPair("BTC",fromCurr));
+			MarketOrder sellOrder = new MarketOrder(OrderType.ASK,qtyToBTC.getAmount(),new CurrencyPair("BTC",toCurr.toString()));
 			
 			log.debug(exchangeName+" Arbitrage buy order is buy "+qtyFromBTC.toString()+" for "+qtyFrom.toString());
 			log.debug(exchangeName+" Arbitrage sell order is sell "+qtyToBTC.toString()+" for "+qtyTo.toString());
@@ -228,9 +236,9 @@ public class ArbitrageEngine implements Runnable {
 
 	public void addTick(ATPTicker tick) {
 		
-		CurrencyUnit currency = CurrencyUnit.getInstance(tick.getLast().getCurrencyUnit().getCurrencyCode());
+		String currency = tick.getLast().getCurrencyUnit();
 		
-		if(!currency.getCode().equals("BTC")) {
+		if(!currency.equals("BTC")) {
 			synchronized(lastTickMap) {
 				lastTickMap.put(currency, tick);
 			}

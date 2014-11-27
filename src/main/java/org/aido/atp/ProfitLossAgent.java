@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
+import org.aido.atp.migration.MigMoney;
 
 import com.xeiam.xchange.dto.trade.Wallet;
 
@@ -36,14 +35,14 @@ import org.slf4j.LoggerFactory;
 /**
 * ProfitLossAgent class.
 *
-* @author Aido
+* @author Aido, advanchair
 */
 
 public class ProfitLossAgent implements Runnable {
 	
 	private static ProfitLossAgent instance = null;
-	private HashMap<CurrencyUnit, ArrayList<BigMoney>> balances;
-	private HashMap<CurrencyUnit, ArrayList<BigMoney>> rates;
+	private HashMap<String, ArrayList<MigMoney>> balances;
+	private HashMap<String, ArrayList<MigMoney>> rates;
 	private static Logger log;
 	
 	public static ProfitLossAgent getInstance() {
@@ -56,8 +55,8 @@ public class ProfitLossAgent implements Runnable {
 	private ProfitLossAgent(){
 			
 			log = LoggerFactory.getLogger(ProfitLossAgent.class);
-			balances = new HashMap<CurrencyUnit, ArrayList<BigMoney>>();
-			rates = new HashMap<CurrencyUnit, ArrayList<BigMoney>>();
+			balances = new HashMap<String, ArrayList<MigMoney>>();
+			rates = new HashMap<String, ArrayList<MigMoney>>();
 	}
 	
 	@Override
@@ -67,31 +66,33 @@ public class ProfitLossAgent implements Runnable {
 	public void updateBalances(List<Wallet> wallets) {
 	
 		for(Wallet wallet : wallets){
-			CurrencyUnit currency = wallet.getBalance().getCurrencyUnit();
-			
+//			CurrencyUnit currency = wallet.getBalance().getCurrencyUnit();
+			String currency = wallet.getCurrency();
+						
 			//Do we have a new currency in our wallet?
 			if(!balances.containsKey(currency)){
 				//Make some space for it.
-				balances.put(currency,new ArrayList<BigMoney>());
+				balances.put(currency,new ArrayList<MigMoney>());
 			}
-			ArrayList<BigMoney> balance = balances.get(currency);
+			ArrayList<MigMoney> balance = balances.get(currency);
 			// just store start and end balances
 			if (balance.size() < 2) {
-				balance.add(wallet.getBalance());
+//				balance.add(wallet.getBalance());
+				balance.add(new MigMoney(wallet.getBalance(), currency));
 			} else {
-				balance.set(1,wallet.getBalance());
+				balance.set(1, new MigMoney(wallet.getBalance(), currency));
 			}
 		}
 	}
 	
-	public void updateRates(BigMoney rate) {
+	public void updateRates(MigMoney rate) {
 	
-		CurrencyUnit currency = rate.getCurrencyUnit();
+		String currency = rate.getCurrencyUnit();
 		
 		//Do we have a new currency in our rates array?
 		if(!rates.containsKey(currency)){
 			//Make some space for it.
-			rates.put(currency,new ArrayList<BigMoney>());
+			rates.put(currency,new ArrayList<MigMoney>());
 		}
 		// just store first and last rate
 		if (rates.get(currency).size() < 2) {
@@ -103,25 +104,25 @@ public class ProfitLossAgent implements Runnable {
 	
 	public void calcProfitLoss() {
 	
-		BigMoney equivBTCStartBal = BigMoney.zero(CurrencyUnit.of("BTC"));
-		BigMoney equivBTCEndBal = BigMoney.zero(CurrencyUnit.of("BTC"));
-		BigMoney startBal = BigMoney.zero(CurrencyUnit.of("BTC"));
-		BigMoney endBal = BigMoney.zero(CurrencyUnit.of("BTC"));
+		MigMoney equivBTCStartBal = MigMoney.zero("BTC");
+		MigMoney equivBTCEndBal = MigMoney.zero("BTC");
+		MigMoney startBal = MigMoney.zero("BTC");
+		MigMoney endBal = MigMoney.zero("BTC");
 		BigDecimal startRate = BigDecimal.ZERO;
 		BigDecimal endRate = BigDecimal.ZERO;
-		BigMoney profitBTC;
+		MigMoney profitBTC;
 		BigDecimal profitPercent;
 		NumberFormat percentFormat = NumberFormat.getPercentInstance();
 		
 		percentFormat.setMaximumFractionDigits(8);
 		percentFormat.setRoundingMode(RoundingMode.HALF_EVEN);
 		
-		for(CurrencyUnit currency : balances.keySet()) {
+		for(String currency : balances.keySet()) {
 			if (balances.get(currency).size() >= 2) {
 				startBal = balances.get(currency).get(0);
 				endBal = balances.get(currency).get(balances.get(currency).size() - 1);
 				
-				if (currency.equals(CurrencyUnit.of("BTC"))) {
+				if (currency.equals("BTC")) {
 					equivBTCStartBal = equivBTCStartBal.plus(startBal);
 					equivBTCEndBal = equivBTCEndBal.plus(endBal);
 				} else {
@@ -131,14 +132,14 @@ public class ProfitLossAgent implements Runnable {
 								startRate=rates.get(currency).get(0).getAmount();
 								endRate=rates.get(currency).get(rates.get(currency).size() - 1).getAmount();
 								
-								equivBTCStartBal = equivBTCStartBal.plus(startBal.convertedTo(CurrencyUnit.of("BTC"),BigDecimal.ONE.divide(startRate,16,RoundingMode.HALF_EVEN)));
-								equivBTCEndBal = equivBTCEndBal.plus(endBal.convertedTo(CurrencyUnit.of("BTC"),BigDecimal.ONE.divide(endRate,16,RoundingMode.HALF_EVEN)));
+								equivBTCStartBal = equivBTCStartBal.plus(startBal.convertedTo("BTC",BigDecimal.ONE.divide(startRate,16,RoundingMode.HALF_EVEN)));
+								equivBTCEndBal = equivBTCEndBal.plus(endBal.convertedTo("BTC",BigDecimal.ONE.divide(endRate,16,RoundingMode.HALF_EVEN)));
 							} else {
-								log.info("Not enough "+currency.getCode()+" ticker data collected yet to calculate profit/loss");
+								log.info("Not enough "+currency+" ticker data collected yet to calculate profit/loss");
 								return;
 							}
 						} else {
-							log.info("No "+currency.getCode()+" ticker data collected yet, cannot calculate profit/loss");
+							log.info("No "+currency+" ticker data collected yet, cannot calculate profit/loss");
 							return;
 						}
 					}

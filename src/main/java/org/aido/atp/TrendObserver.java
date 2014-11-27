@@ -23,28 +23,26 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
-import org.joda.money.BigMoney;
-import org.joda.money.CurrencyUnit;
-
+import org.aido.atp.migration.MigMoney;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
 * Trend Observer class.
 *
-* @author Aido
+* @author Aido, advanchair
 */
 
 public class TrendObserver implements Runnable {
 
-	private BigMoney vwap;
-	private BigMoney shortSMA;
-	private BigMoney longSMA;
-	private BigMoney shortEMA;
-	private BigMoney longEMA;
-	private BigMoney shortMACD;
-	private BigMoney longMACD;
-	private BigMoney sigLineMACD;
+	private MigMoney vwap;
+	private MigMoney shortSMA;
+	private MigMoney longSMA;
+	private MigMoney shortEMA;
+	private MigMoney longEMA;
+	private MigMoney shortMACD;
+	private MigMoney longMACD;
+	private MigMoney sigLineMACD;
 	private ATPTicker high;
 	private ATPTicker low;
 	private ATPTicker last;
@@ -55,7 +53,7 @@ public class TrendObserver implements Runnable {
 	private Integer tickerSize;
 	private Logger log;
 	private boolean learningComplete;
-	private CurrencyUnit localCurrency;
+	private String localCurrency;
 	private String exchangeName;
 	
 	public TrendObserver(String exchangeName, ArrayList<ATPTicker> marketData) {
@@ -66,13 +64,13 @@ public class TrendObserver implements Runnable {
 		learningComplete = false;
 		if(ticker != null && !ticker.isEmpty()) {
 			if (ticker.size() < Integer.parseInt(Application.getInstance().getConfig("MinTickSize"))){
-				log.info(exchangeName + " " + localCurrency.getCurrencyCode()+" Ticker size: "+ticker.size()+". Trend observer does not currently have enough "+localCurrency.getCurrencyCode()+" data to determine trend.");
+				log.info(exchangeName + " " + localCurrency+" Ticker size: "+ticker.size()+". Trend observer does not currently have enough "+localCurrency+" data to determine trend.");
 				learningComplete = false;
 			} else {
 				learningComplete = true;
 			}
 		} else {
-			log.info(exchangeName + "Trend observer currently has no "+localCurrency.getCurrencyCode()+" ticker data");
+			log.info(exchangeName + "Trend observer currently has no "+localCurrency+" ticker data");
 			learningComplete = false;
 		}	
 	}
@@ -83,13 +81,13 @@ public class TrendObserver implements Runnable {
 		trendArrow = 0;
 		bidArrow = 0;
 		askArrow = 0;
-		shortSMA = BigMoney.zero(localCurrency);
-		longSMA = BigMoney.zero(localCurrency);
-		shortEMA = BigMoney.zero(localCurrency);
-		longEMA = BigMoney.zero(localCurrency);
-		shortMACD = BigMoney.zero(localCurrency);
-		longMACD = BigMoney.zero(localCurrency);
-		sigLineMACD = BigMoney.zero(localCurrency);
+		shortSMA = MigMoney.zero(localCurrency);
+		longSMA = MigMoney.zero(localCurrency);
+		shortEMA = MigMoney.zero(localCurrency);
+		longEMA = MigMoney.zero(localCurrency);
+		shortMACD = MigMoney.zero(localCurrency);
+		longMACD = MigMoney.zero(localCurrency);
+		sigLineMACD = MigMoney.zero(localCurrency);
 		
 		int idx = 0;
 		Integer shortMASize = Integer.valueOf(Application.getInstance().getConfig("ShortMATickSize"));
@@ -101,13 +99,13 @@ public class TrendObserver implements Runnable {
 		Double expShortMACD = Double.valueOf(0);
 		Double expLongMACD = Double.valueOf(0);
 		Double expSigLineMACD = Double.valueOf(0);
-		BigMoney sumShortSMA = BigMoney.zero(localCurrency);
-		BigMoney sumLongSMA = BigMoney.zero(localCurrency);	
+		MigMoney sumShortSMA = MigMoney.zero(localCurrency);
+		MigMoney sumLongSMA = MigMoney.zero(localCurrency);	
 
 		//Items in here are done once for every item in the ticker
-		BigMoney newBid = null, oldBid = BigMoney.zero(localCurrency);
-		BigMoney newAsk = null, oldAsk = BigMoney.zero(localCurrency);
-		BigMoney newPrice = null, oldPrice = BigMoney.zero(localCurrency);
+		MigMoney newBid = null, oldBid = MigMoney.zero(localCurrency);
+		MigMoney newAsk = null, oldAsk = MigMoney.zero(localCurrency);
+		MigMoney newPrice = null, oldPrice = MigMoney.zero(localCurrency);
 		BigDecimal newVolume = null, oldVolume = BigDecimal.ZERO;
 		BigDecimal totalVolume = BigDecimal.ZERO, absVolume = null, changedVolume = null;
 		
@@ -116,7 +114,7 @@ public class TrendObserver implements Runnable {
 		//We are concerned not only with current vwap, but previous vwap.
 		// This is because the differential between the two is an important market indicator
 		
-		vwap = BigMoney.zero(localCurrency);
+		vwap = MigMoney.zero(localCurrency);
 		
 		synchronized(ticker) {
 			
@@ -224,12 +222,12 @@ public class TrendObserver implements Runnable {
 			longSMA = sumLongSMA.dividedBy(Long.valueOf(tickerSize),RoundingMode.HALF_EVEN);
 		}
 		
-		log.info(exchangeName + " High "+localCurrency.getCurrencyCode()+" :- "+high.toString());
-		log.info(exchangeName + " Low "+localCurrency.getCurrencyCode()+" :- "+low.toString());			
-		log.info(exchangeName + " Current "+localCurrency.getCurrencyCode()+" :- "+ticker.get(tickerSize - 1).toString());
+		log.info(exchangeName + " High "+localCurrency+" :- "+high.toString());
+		log.info(exchangeName + " Low "+localCurrency+" :- "+low.toString());			
+		log.info(exchangeName + " Current "+localCurrency+" :- "+ticker.get(tickerSize - 1).toString());
 		
 		if(learningComplete) {
-			log.debug("Starting "+exchangeName+" "+localCurrency.getCurrencyCode()+" trend trading agent.");
+			log.debug("Starting "+exchangeName+" "+localCurrency+" trend trading agent.");
 			new Thread(new TrendTradingAgent(this,exchangeName)).start();
 		}
 	}
@@ -246,35 +244,35 @@ public class TrendObserver implements Runnable {
 		return askArrow;
 	}
 	
-	public BigMoney getVwap() {
+	public MigMoney getVwap() {
 		return vwap;
 	}
 	
-	public BigMoney getShortSMA() {
+	public MigMoney getShortSMA() {
 		return shortSMA;
 	}
 	
-	public BigMoney getLongSMA() {
+	public MigMoney getLongSMA() {
 		return longSMA;
 	}
 	
-	public BigMoney getShortEMA() {
+	public MigMoney getShortEMA() {
 		return shortEMA;
 	}
 	
-	public BigMoney getLongEMA() {
+	public MigMoney getLongEMA() {
 		return longEMA;
 	}
 
-	public BigMoney getShortMACD() {
+	public MigMoney getShortMACD() {
 		return shortMACD;
 	}
 	
-	public BigMoney getLongMACD() {
+	public MigMoney getLongMACD() {
 		return longMACD;
 	}
 
-	public BigMoney getSigLineMACD() {
+	public MigMoney getSigLineMACD() {
 		return sigLineMACD;
 	}
 
@@ -286,7 +284,7 @@ public class TrendObserver implements Runnable {
 		return tickerSize;
 	}
 	
-	public CurrencyUnit getCurrency() {
+	public String getCurrency() {
 		return localCurrency;
 	}
 }

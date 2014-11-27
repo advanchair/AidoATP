@@ -4,10 +4,9 @@ To Do:
 - implement XChange 2.2.0-Snapshot
 -- update pom.xml (done)
 -- remove all exchange classes except BTC-e (done)
--- replace classes (BigMoney etc.) with newer ones or write helper classes
-
-
-
+-- replace BigMoney with helper class MigMoney
+-- replace CurrencyUnit with String
+---> check https://github.com/JodaOrg/joda-money/blob/master/src/main/java/org/joda/money/CurrencyUnit.java
 
 
 
