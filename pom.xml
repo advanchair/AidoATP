@@ -12,10 +12,10 @@
 	<description>Aido Advanced Trading Platform</description>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/aido/AidoATP/issues</url>
+		<url>https://github.com/advanchair/AidoATP/issues</url>
 	</issueManagement>
 	<scm>
-		<url>git://github.com/aido/AidoATP</url>
+		<url>git://github.com/advanchair/AidoATP</url>
 	</scm>
 	<repositories>
 		<repository>
@@ -88,25 +88,25 @@
 		</dependency>
 		<dependency>
 			<groupId>com.xeiam.xchange</groupId>
-			<artifactId>xchange-mtgox</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.xeiam.xchange</groupId>
 			<artifactId>xchange-btce</artifactId>
+		</dependency>
+<!--		<dependency>
+			<groupId>com.xeiam.xchange</groupId>
+			<artifactId>xchange-mtgox</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.xeiam.xchange</groupId>
 			<artifactId>xchange-bitstamp</artifactId>
 		</dependency>
-<!--		<dependency>
+		<dependency>
 			<groupId>com.xeiam.xchange</groupId>
 			<artifactId>xchange-bitcoincentral</artifactId>
-		</dependency> -->
+		</dependency> 
 		<dependency>
 			<groupId>com.xeiam.xchange</groupId>
 			<artifactId>xchange-campbx</artifactId>
 		</dependency>
-		<dependency>
+-->		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 		</dependency>
@@ -120,9 +120,14 @@
 			<dependency>
 				<groupId>com.xeiam.xchange</groupId>
 				<artifactId>xchange-core</artifactId>
-				<version>1.9.0-SNAPSHOT</version>
+				<version>2.2.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
+				<groupId>com.xeiam.xchange</groupId>
+				<artifactId>xchange-btce</artifactId>
+				<version>2.2.0-SNAPSHOT</version>
+			</dependency>
+<!--			<dependency>
 				<groupId>com.xeiam.xchange</groupId>
 				<artifactId>xchange-mtgox</artifactId>
 				<version>1.9.0-SNAPSHOT</version>
@@ -137,17 +142,17 @@
 				<artifactId>xchange-bitstamp</artifactId>
 				<version>1.9.0-SNAPSHOT</version>
 			</dependency>
-<!--			<dependency>
+			<dependency>
 				<groupId>com.xeiam.xchange</groupId>
 				<artifactId>xchange-bitcoincentral</artifactId>
 				<version>1.6.0</version>
-			</dependency> -->
+			</dependency>
 			<dependency>
 				<groupId>com.xeiam.xchange</groupId>
 				<artifactId>xchange-campbx</artifactId>
 				<version>1.9.0-SNAPSHOT</version>
 			</dependency>
-			<dependency>
+-->			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>LATEST</version>

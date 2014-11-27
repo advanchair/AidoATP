@@ -1,5 +1,22 @@
-To Do
-=====
+To Do:
+------
+
+- implement XChange 2.2.0-Snapshot
+-- update pom.xml (done)
+-- remove all exchange classes except BTC-e (done)
+-- replace classes (BigMoney etc.) with newer ones or write helper classes
+
+
+
+
+
+
+
+
+
+
+Original ToDo's:
+================
 Re-implement MtGox Streaming ticker
 Improve ExchangeManager class
 Encrypt API secret key

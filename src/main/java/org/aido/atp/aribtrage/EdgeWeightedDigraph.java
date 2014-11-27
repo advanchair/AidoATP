@@ -16,7 +16,7 @@
 * You should have received a copy of the GNU General Public License
 * along with Aido ATP.  If not, see <http://www.gnu.org/licenses/>.
 */
-package org.aido.atp;
+package org.aido.atp.aribtrage;
 
 public class EdgeWeightedDigraph {
 	private final int V;
