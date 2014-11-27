@@ -194,7 +194,7 @@ When interviewed the user will be asked for the following information:
 	Use Bitcoin Central exchange (y/n)
 		Bitcoin Central Username
 		Bitcoin Central Password
-	ISO Code for Prefered Currency (i.e. USD, GBP, JPY, EUR etc)
+	ISO Code for Prefered Currency (i.e. USD, JPY, EUR, LTC, XPM etc)
 	Use ONLY local currency for trades (y/n)
 	Maximum number of bitcoins to trade in a single order
 	Minimum number of bitcoins to trade in a single order

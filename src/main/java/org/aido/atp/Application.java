@@ -185,24 +185,17 @@ public class Application {
 		for (String exchange : ExchangeManager.getExchangesHashMap().keySet()) {
 			out.print("Use " + exchange + " exchange (y/n): ");
 			if(console.readLine().equalsIgnoreCase("Y") ) {
-				if (exchange.equals("Bitstamp") || exchange.equals("BitcoinCentral") || exchange.equals("CampBX")) {
-					out.print("Enter your " + exchange + " Username: ");
-					config.put(exchange + "UserName",console.readLine());
-					out.print("Enter your " + exchange + " Password: ");
-					config.put(exchange + "Password", console.readLine());
-				} else {
-					out.print("Enter your " + exchange + " API key: ");
-					config.put(exchange + "ApiKey",console.readLine());
-					out.print("Enter your " + exchange + " secret key: ");
-					config.put(exchange + "SecretKey", console.readLine());
-				}
+				out.print("Enter your " + exchange + " API key: ");
+				config.put(exchange + "ApiKey",console.readLine());
+				out.print("Enter your " + exchange + " secret key: ");
+				config.put(exchange + "SecretKey", console.readLine());
 				config.put("Use"+ exchange, "1");
 			} else {
 				config.put("Use"+ exchange, "0");
 			}
 		}
 
-		out.print("ISO Code for Prefered Currency (i.e. USD, GBP, JPY, EUR etc): ");
+		out.print("Code for Prefered Currency to trade against BTC (i.e. USD, EUR, LTC etc): ");
 		config.put("LocalCurrency", console.readLine());
 
 		out.print("Use ONLY local currency for trades (y/n): ");
@@ -212,16 +205,16 @@ public class Application {
 			config.put("UseLocalOnly", "0");
 		}
 
-		out.print("Maximum number of bitcoins to trade in a single order: ");
+		out.print("Maximum number of bitcoins to trade in a single order (eg 1.0): ");
 		config.put("MaxBTC", console.readLine());
 
-		out.print("Minimum number of bitcoins to trade in a single order: ");
+		out.print("Minimum number of bitcoins to trade in a single order (eg 0.01): ");
 		config.put("MinBTC", console.readLine());
 
-		out.print("Maximum amount of local currency to trade in a single order: ");
+		out.print("Maximum amount of local currency to trade in a single order (eg 1.0): ");
 		config.put("MaxLocal", console.readLine());
 
-		out.print("Minimum amount of local currency to trade in a single order: ");
+		out.print("Minimum amount of local currency to trade in a single order (eg 0.01): ");
 		config.put("MinLocal", console.readLine());
 
 		out.print("Overall maximum loss tolerance (eg 25% = 0.25): ");
@@ -244,27 +237,28 @@ public class Application {
 			config.put("UseTrend", "0");
 		}
 
-		out.print("Polling Interval (in seconds): ");
+		out.print("Polling Interval in seconds (eg 60): ");
 		config.put("PollingInterval", console.readLine());
 
-		out.print("Minimum ticker size for trending trade decisions: ");
+		out.print("Minimum ticker size for trending trade decisions (eg 16): ");
 		config.put("MinTickSize", console.readLine());
 
-		out.print("Maximum ticker age for trending trade decisions (in minutes): ");
+		out.print("Maximum ticker age for trending trade decisions in minutes (eg 60): ");
 		config.put("MaxTickAge", console.readLine());
 
-		out.print("Number of ticks used to calculate short Moving Average: ");
+		out.print("Number of ticks used to calculate short Moving Average (eg minimum ticker size + 1): ");
 		config.put("ShortMATickSize", console.readLine());
 
-		out.print("Number of ticks used to calculate short Moving Average Convergence-Divergence: ");
+		out.print("Number of ticks used to calculate short Moving Average Convergence-Divergence (eg 12): ");
 		config.put("ShortMACDTickSize", console.readLine());
 
-		out.print("Number of ticks used to calculate long Moving Average Convergence-Divergence: ");
+		out.print("Number of ticks used to calculate long Moving Average Convergence-Divergence (eg 26): ");
 		config.put("LongMACDTickSize", console.readLine());
 
-		out.print("Number of MACD values used to calculate MACD Signal Line: ");
+		out.print("Number of MACD values used to calculate MACD Signal Line  (eg 9): ");
 		config.put("SigLineMACDSize", console.readLine());
 
+		out.print("Possible Bid/Ask Logic: ADS, EMA, SMA, VWAPCross or MACD");
 		out.print("Bid Logic: ");
 		config.put("BidLogic", console.readLine());
 
