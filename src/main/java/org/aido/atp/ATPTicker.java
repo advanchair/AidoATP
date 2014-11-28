@@ -21,57 +21,64 @@ package org.aido.atp;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.joda.money.BigMoney;
+import org.aido.atp.migration.MigMoney;
 
 import com.xeiam.xchange.dto.marketdata.Ticker;
 
 /**
 * ATP ticker class.
 *
-* @author Auberon
+* @author Auberon, advanchair
 */
 
 public class ATPTicker implements Serializable{
 	
 	private static final long serialVersionUID = 3857496442807778974L;
-	private BigMoney   last;
-	private BigMoney   ask;
-	private BigMoney   bid;
+	private MigMoney   last;
+	private MigMoney   ask;
+	private MigMoney   bid;
 	private long       volume;
 	private Date	   timestamp;
 	private String     tradeableIdentifier;
 	
 	public ATPTicker(Ticker tick) {
 		
-		this.setLast(tick.getLast());
-		this.setAsk(tick.getAsk());
-		this.setBid(tick.getBid());
+//		this.setLast(tick.getLast());
+//		this.setAsk(tick.getAsk());
+//		this.setBid(tick.getBid());
+//TODO maybe find how ticker.get... worket when xchange used bigmoney
+		String currencyUnit = tick.getCurrencyPair().counterSymbol;
+		this.setLast(new MigMoney(tick.getLast(), currencyUnit));
+		this.setAsk(new MigMoney(tick.getAsk(), currencyUnit));
+		this.setBid(new MigMoney(tick.getBid(), currencyUnit));
 		this.setVolume(tick.getVolume().longValue());
 		this.setTimestamp(tick.getTimestamp());
-		this.setTradeableIdentifier(tick.getTradableIdentifier());
+//		this.setTradeableIdentifier(tick.getTradableIdentifier());
+//TODO check what tradable identifier has to be used
+		this.setTradeableIdentifier(tick.getCurrencyPair().baseSymbol);
 	}
 
-	public BigMoney getLast() {
+	public MigMoney getLast() {
 		return last;
 	}
 
-	public void setLast(BigMoney last) {
+	public void setLast(MigMoney last) {
 		this.last = last;
 	}
 
-	public BigMoney getAsk() {
+	public MigMoney getAsk() {
 		return ask;
 	}
 
-	public void setAsk(BigMoney ask) {
+	public void setAsk(MigMoney ask) {
 		this.ask = ask;
 	}
 
-	public BigMoney getBid() {
+	public MigMoney getBid() {
 		return bid;
 	}
 
-	public void setBid(BigMoney bid) {
+	public void setBid(MigMoney bid) {
 		this.bid = bid;
 	}
 

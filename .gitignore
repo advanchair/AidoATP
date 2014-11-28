@@ -1,9 +1,10 @@
 *.class
 *.dat
-*.error
+*.err*
 *.log
 target
 
 # Package Files #
 *.war
 *.ear
+/api-keys.txt

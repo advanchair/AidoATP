@@ -23,23 +23,22 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.joda.money.CurrencyUnit;
-
 import com.xeiam.xchange.dto.marketdata.Ticker;
-import com.xeiam.xchange.utils.DateUtils;
 
+import org.aido.atp.aribtrage.ArbitrageEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
 * Ticker Manager class.
 *
-* @author Aido
+* @author Aido, advanchair
 */
 
 public class TickerManager implements Runnable {
@@ -54,14 +53,16 @@ public class TickerManager implements Runnable {
 	public boolean quit;
 	public Logger log;
 
-	public static TickerManager getInstance(String exchangeName, CurrencyUnit currency) {
+	public static TickerManager getInstance(String exchangeName, String currency) {
 		Pair exchangeCurrency = new Pair(exchangeName, currency); 
 		Class tickerManagerClass;
 
 		if(!instances.containsKey(exchangeCurrency)) {
 			try {
 				tickerManagerClass = Class.forName(ExchangeManager.getInstance(exchangeName).getTickerManagerClass());
-				instances.put(exchangeCurrency,(TickerManager) tickerManagerClass.getConstructor(CurrencyUnit.class, String.class).newInstance(currency,exchangeName));
+//				instances.put(exchangeCurrency,(TickerManager) tickerManagerClass.getConstructor(CurrencyUnit.class, String.class).newInstance(currency,exchangeName));
+//TODO check if constructor is filled correct
+				instances.put(exchangeCurrency,(TickerManager) tickerManagerClass.getConstructor(String.class, String.class).newInstance(currency,exchangeName));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -69,10 +70,17 @@ public class TickerManager implements Runnable {
 		return instances.get(exchangeCurrency);
 	}
 
-	public TickerManager(CurrencyUnit currency, String exchangeName) {
+	public TickerManager(String currency, String exchangeName) {
 		log = LoggerFactory.getLogger(TickerManager.class);
 		this.exchangeName = exchangeName;
-		this.fileName = exchangeName+"_"+currency.getCurrencyCode()+".dat";
+//		this.fileName = exchangeName+"_"+currency+".dat";
+		this.fileName = "tickerdata/"+exchangeName+"/"+currency+".dat";
+		
+		// create folder for exchanges tickerdata .dat's
+		File folderTickerdata = new File("tickerdata");
+		folderTickerdata.mkdir();
+		File folderExchange = new File("tickerdata/"+exchangeName);
+		folderExchange.mkdir();
 
 		quit = false;
 		try {
@@ -156,12 +164,14 @@ public class TickerManager implements Runnable {
 	public void checkTick(Ticker tick) {
 		ATPTicker atpTick = new ATPTicker(tick);
 		if (atpTick.getTimestamp() == null)
-			atpTick.setTimestamp(DateUtils.nowUtc());
+			atpTick.setTimestamp(GregorianCalendar.getInstance().getTime());
+//			atpTick.setTimestamp(DateUtils.nowUtc());
 		currentVolume = atpTick.getVolume();
 		if(currentVolume != lastVolume) {
 			synchronized(tickerCache) {
 				tickerCache.add(atpTick);
-				if (Application.getInstance().getArbMode()) {
+				if (Application.getInstance().getArbMode())
+				{
 					new Thread(ArbitrageEngine.getInstance(exchangeName)).start();
 					ArbitrageEngine.getInstance(exchangeName).addTick(atpTick);
 				}

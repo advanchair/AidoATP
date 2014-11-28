@@ -1,6 +1,30 @@
-To Do
-=====
+ToDo:
+-----
+
+- check if application works correctly with XChange 2.2.0-SNAPSHOT on
+-> BTC-e
+-> Cryptsy
+
+- store ticker data in an extra file eg a csv-file
+- check/rethink thread handling 
+- rewrite exchange manager
+- make MigMoney a util class
+
+Original ToDo's:
+================
 Re-implement MtGox Streaming ticker
 Improve ExchangeManager class
 Encrypt API secret key
 Investigate implementing a workround for CampBX not providing volume value in it's ticker
+Recode Arbitrage
+Implement TA-Lib
+
+
+Done:
+-----
+
+- update xchange dependencys to 2.2.0-SNAPSHOT
+- replace CurrencyUnit by String
+- write helper class for BigMoney rip off
+- organize tickerdata in a folder structure
+- dont stop ticker thread if "ERROR: Caught unexpected ... exception, ticker manager shutting down now!. Details are listed below." Error occurs.

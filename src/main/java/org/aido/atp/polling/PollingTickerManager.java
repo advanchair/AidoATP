@@ -16,30 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Aido ATP.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.aido.atp;
+package org.aido.atp.polling;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.net.Socket;
 
-import org.joda.money.CurrencyUnit;
+import org.aido.atp.Application;
+import org.aido.atp.ExchangeManager;
+import org.aido.atp.TickerManager;
+
+import si.mazi.rescu.HttpStatusIOException;
 
 import com.xeiam.xchange.currency.Currencies;
+import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.service.polling.PollingMarketDataService;
 
 /**
 * Polling Ticker Manager class.
 *
-* @author Aido
+* @author Aido, advanchair
 */
 
 public class PollingTickerManager extends TickerManager {
 
 	private String exchangeName;
 	private PollingMarketDataService marketData;
-	private CurrencyUnit currency;
+	private String currency;
 
-	public PollingTickerManager(CurrencyUnit currency, String exchangeName) {
+	public PollingTickerManager(String currency, String exchangeName) {
 		super(currency,exchangeName);
 		this.exchangeName = exchangeName;
 		this.currency = currency;
@@ -53,29 +58,33 @@ public class PollingTickerManager extends TickerManager {
 
 	public void getTick() {
 		try {
-			checkTick(marketData.getTicker(Currencies.BTC, currency.getCurrencyCode()));
+//			checkTick(marketData.getTicker(Currencies.BTC, currency.getCurrencyCode()));
+//TODO implement other tickers
+			log.info("PollingTickerManager.getTick() currency: "+currency);
+			checkTick(marketData.getTicker(new CurrencyPair("BTC",currency), currency));
 			TimeUnit.SECONDS.sleep(Integer.parseInt(Application.getInstance().getConfig("PollingInterval")));
-		} catch (com.xeiam.xchange.ExchangeException | si.mazi.rescu.HttpException e) {
+		} catch (com.xeiam.xchange.ExchangeException | HttpStatusIOException e) {
 			Socket testSock = null;
-			while (true) {
-				try {
-					log.warn("WARNING: Testing connection to {} exchange",exchangeName);
-					testSock = new Socket(ExchangeManager.getInstance(exchangeName).getHost(),ExchangeManager.getInstance(exchangeName).getPort());
-					if (testSock != null) { break; }
+			try {
+				log.warn("WARNING: Testing connection to {} exchange",exchangeName);
+				testSock = new Socket(ExchangeManager.getInstance(exchangeName).getHost(),ExchangeManager.getInstance(exchangeName).getPort());
+				if (testSock != null) {
+					log.info("connection to {} established",exchangeName);
 				}
-				catch (java.io.IOException e1) {
-					try {
-						log.error("ERROR: Cannot connect to {} exchange. Sleeping for one minute",exchangeName);
-						TimeUnit.MINUTES.sleep(1);
-					} catch (InterruptedException e2) {
-						e2.printStackTrace();
-					}
+			}
+			catch (java.io.IOException e1) {
+				try {
+					log.error("ERROR: Cannot connect to {} exchange. Sleeping for one minute",exchangeName);
+					TimeUnit.MINUTES.sleep(1);
+				} catch (InterruptedException e2) {
+					e2.printStackTrace();
 				}
 			}
 		} catch (Exception e) {
 			log.error("ERROR: Caught unexpected {} exception, ticker manager shutting down now!. Details are listed below.",exchangeName);
-			e.printStackTrace();
-			stop();
+			log.error(e.getMessage(),exchangeName);
+			log.error(e.getLocalizedMessage(),exchangeName);
+//			stop();
 		}
 	}
 	

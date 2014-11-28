@@ -16,28 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with Aido ATP.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.aido.atp;
+package org.aido.atp.exchanges;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.ExchangeSpecification;
-import com.xeiam.xchange.bitstamp.BitstampExchange;
+import com.xeiam.xchange.btce.v3.BTCEExchange;
+import com.xeiam.xchange.cryptsy.CryptsyExchange;
 
+import org.aido.atp.Application;
+import org.aido.atp.ExchangeManager;
+import org.aido.atp.polling.PollingTickerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-* AidoATP Bitstamp class.
+* AidoATP CryptsyExchange class.
 *
-* @author Aido
+* @author advanchair
 */
 
-public class ATPBitstampExchange extends BitstampExchange {
+public class ATPCryptsyExchange extends CryptsyExchange {
 
-	private static final String EXCHANGENAME = "Bitstamp";
+	private static final String EXCHANGENAME = "cryptsy";
 	private static final String TICKERMANAGERCLASS = PollingTickerManager.class.getName();
 	private static Exchange instance = null;
-	private static Logger log = LoggerFactory.getLogger(ATPBitstampExchange.class);
+	private static Logger log = LoggerFactory.getLogger(ATPCryptsyExchange.class);
+	private static ExchangeSpecification exchangeSpecification;
 
 	public static Exchange getInstance() {
 		if(instance == null) {
@@ -47,24 +52,23 @@ public class ATPBitstampExchange extends BitstampExchange {
 	}
 
 	public static Exchange newInstance() {
+		String apiKey = Application.getInstance().getConfig(EXCHANGENAME + "ApiKey");
+		String secretKey= Application.getInstance().getConfig(EXCHANGENAME + "SecretKey");
 
-		String userName = Application.getInstance().getConfig(EXCHANGENAME + "UserName");
-		String passWord = Application.getInstance().getConfig(EXCHANGENAME + "Password");
-
-		log.debug("{} UserName: {}",EXCHANGENAME,userName);
-		log.debug("{} Password: {}",EXCHANGENAME,passWord);
+		log.debug("{} API Key: {}",EXCHANGENAME,apiKey);
+		log.debug("{} Secret Key: {}",EXCHANGENAME,secretKey);
 		
-		Exchange exchange = ExchangeFactory.INSTANCE.createExchange(BitstampExchange.class.getName());
+		Exchange exchange = ExchangeFactory.INSTANCE.createExchange(CryptsyExchange.class.getName());
 		
 		ExchangeSpecification exchangeSpecification = exchange.getDefaultExchangeSpecification();
-		exchangeSpecification.setUserName(userName);
-		exchangeSpecification.setPassword(passWord);
+		exchangeSpecification.setApiKey(apiKey);
+		exchangeSpecification.setSecretKey(secretKey);
 		exchange.applySpecification(exchangeSpecification);
-
+		
 		ExchangeManager.getInstance(EXCHANGENAME).setExchangeSpecification(exchangeSpecification);
 		ExchangeManager.getInstance(EXCHANGENAME).setTickerManagerClass(TICKERMANAGERCLASS);
 		
-		log.info("Connecting to {} Exchange",EXCHANGENAME);
+		log.info("Connecting to {} Exchange",EXCHANGENAME);			
 			
 		return exchange;
 	}
