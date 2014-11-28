@@ -1,5 +1,6 @@
 package org.aido.atp.migration;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -9,14 +10,16 @@ import java.math.RoundingMode;
 * @author advanchair
 */
 
-public class MigMoney
+public class MigMoney implements Serializable
 {
 	BigDecimal amount = new BigDecimal(0);
 	String currencyUnit;
 	
 	public MigMoney(BigDecimal amount, String currencyUnit)
 	{
-		this.amount = amount;
+		if(amount != null)
+			this.amount = amount;
+
 		this.currencyUnit = currencyUnit;
 	}
 	
@@ -80,8 +83,9 @@ public class MigMoney
 	{
 		boolean ret = false;
 		
-		if(amount.doubleValue() > other.getAmount().doubleValue())
-			ret = true;
+		if(other != null)
+			if(amount.doubleValue() > other.getAmount().doubleValue())
+				ret = true;
 		
 		return ret;
 	}
@@ -90,8 +94,9 @@ public class MigMoney
 	{
 		boolean ret = false;
 		
-		if(amount.doubleValue() < other.getAmount().doubleValue())
-			ret = true;
+		if(other != null)
+			if(amount.doubleValue() < other.getAmount().doubleValue())
+				ret = true;
 		
 		return ret;
 	}
@@ -137,5 +142,11 @@ public class MigMoney
 	public int compareTo(MigMoney other)
 	{
 		return amount.compareTo(other.getAmount());
+	}
+	
+	@Override
+	public String toString()
+	{
+		return amount.toString();
 	}
 }
