@@ -60,8 +60,8 @@ public class PollingTickerManager extends TickerManager {
 		try {
 //			checkTick(marketData.getTicker(Currencies.BTC, currency.getCurrencyCode()));
 //TODO implement other tickers
-//			log.info("PollingTickerManager.getTick() currency: "+currency);
-			checkTick(marketData.getTicker(new CurrencyPair("BTC"), currency));
+			log.info("PollingTickerManager.getTick() currency: "+currency);
+			checkTick(marketData.getTicker(new CurrencyPair("BTC",currency), currency));
 			TimeUnit.SECONDS.sleep(Integer.parseInt(Application.getInstance().getConfig("PollingInterval")));
 		} catch (com.xeiam.xchange.ExchangeException | HttpStatusIOException e) {
 			Socket testSock = null;
