@@ -47,7 +47,7 @@ public class ATPTicker implements Serializable{
 //		this.setAsk(tick.getAsk());
 //		this.setBid(tick.getBid());
 //TODO maybe find how ticker.get... worket when xchange used bigmoney
-		String currencyUnit = tick.getCurrencyPair().baseSymbol;
+		String currencyUnit = tick.getCurrencyPair().counterSymbol;
 		this.setLast(new MigMoney(tick.getLast(), currencyUnit));
 		this.setAsk(new MigMoney(tick.getAsk(), currencyUnit));
 		this.setBid(new MigMoney(tick.getBid(), currencyUnit));
@@ -55,7 +55,7 @@ public class ATPTicker implements Serializable{
 		this.setTimestamp(tick.getTimestamp());
 //		this.setTradeableIdentifier(tick.getTradableIdentifier());
 //TODO check what tradable identifier has to be used
-		this.setTradeableIdentifier(currencyUnit);
+		this.setTradeableIdentifier(tick.getCurrencyPair().baseSymbol);
 	}
 
 	public MigMoney getLast() {
