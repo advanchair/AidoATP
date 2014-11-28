@@ -4,7 +4,6 @@ To Do:
 -> BTC-e
 -> Cryptsy
 
-- dont stop ticker thread if "ERROR: Caught unexpected ... exception, ticker manager shutting down now!. Details are listed below." Error occurs.
 
 
 
@@ -24,3 +23,5 @@ Done:
 - update xchange dependencys to 2.2.0-SNAPSHOT
 - replace CurrencyUnit by String
 - write helper class for BigMoney rip off
+- organize tickerdata in a folder structure
+- dont stop ticker thread if "ERROR: Caught unexpected ... exception, ticker manager shutting down now!. Details are listed below." Error occurs.
