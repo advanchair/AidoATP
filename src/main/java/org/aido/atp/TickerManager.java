@@ -74,7 +74,13 @@ public class TickerManager implements Runnable {
 		log = LoggerFactory.getLogger(TickerManager.class);
 		this.exchangeName = exchangeName;
 //		this.fileName = exchangeName+"_"+currency+".dat";
-		this.fileName = exchangeName+"/"+currency+".dat";
+		this.fileName = "tickerdata/"+exchangeName+"/"+currency+".dat";
+		
+		// create folder for exchanges tickerdata .dat's
+		File folderTickerdata = new File("tickerdata");
+		folderTickerdata.mkdir();
+		File folderExchange = new File("tickerdata/"+exchangeName);
+		folderExchange.mkdir();
 
 		quit = false;
 		try {
