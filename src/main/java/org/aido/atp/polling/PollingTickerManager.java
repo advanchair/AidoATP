@@ -60,30 +60,30 @@ public class PollingTickerManager extends TickerManager {
 		try {
 //			checkTick(marketData.getTicker(Currencies.BTC, currency.getCurrencyCode()));
 //TODO implement other tickers
-			checkTick(marketData.getTicker(CurrencyPair.BTC_LTC, currency));
+//			log.info("PollingTickerManager.getTick() currency: "+currency);
+			checkTick(marketData.getTicker(new CurrencyPair("BTC"), currency));
 			TimeUnit.SECONDS.sleep(Integer.parseInt(Application.getInstance().getConfig("PollingInterval")));
 		} catch (com.xeiam.xchange.ExchangeException | HttpStatusIOException e) {
 			Socket testSock = null;
-			while (true) {
-				try {
-					log.warn("WARNING: Testing connection to {} exchange",exchangeName);
-					testSock = new Socket(ExchangeManager.getInstance(exchangeName).getHost(),ExchangeManager.getInstance(exchangeName).getPort());
-					if (testSock != null) { break; }
+			try {
+				log.warn("WARNING: Testing connection to {} exchange",exchangeName);
+				testSock = new Socket(ExchangeManager.getInstance(exchangeName).getHost(),ExchangeManager.getInstance(exchangeName).getPort());
+				if (testSock != null) {
+					log.info("connection to {} established",exchangeName);
 				}
-				catch (java.io.IOException e1) {
-					try {
-						log.error("ERROR: Cannot connect to {} exchange. Sleeping for one minute",exchangeName);
-						TimeUnit.MINUTES.sleep(1);
-					} catch (InterruptedException e2) {
-						e2.printStackTrace();
-					}
+			}
+			catch (java.io.IOException e1) {
+				try {
+					log.error("ERROR: Cannot connect to {} exchange. Sleeping for one minute",exchangeName);
+					TimeUnit.MINUTES.sleep(1);
+				} catch (InterruptedException e2) {
+					e2.printStackTrace();
 				}
 			}
 		} catch (Exception e) {
 			log.error("ERROR: Caught unexpected {} exception, ticker manager shutting down now!. Details are listed below.",exchangeName);
 			log.error(e.getMessage(),exchangeName);
 			log.error(e.getLocalizedMessage(),exchangeName);
-			e.printStackTrace();
 			stop();
 		}
 	}

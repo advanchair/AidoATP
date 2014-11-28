@@ -58,7 +58,7 @@ public class ATPCryptsyExchange extends CryptsyExchange {
 		log.debug("{} API Key: {}",EXCHANGENAME,apiKey);
 		log.debug("{} Secret Key: {}",EXCHANGENAME,secretKey);
 		
-		Exchange exchange = ExchangeFactory.INSTANCE.createExchange(BTCEExchange.class.getName());
+		Exchange exchange = ExchangeFactory.INSTANCE.createExchange(CryptsyExchange.class.getName());
 		
 		ExchangeSpecification exchangeSpecification = exchange.getDefaultExchangeSpecification();
 		exchangeSpecification.setApiKey(apiKey);

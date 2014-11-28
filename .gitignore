@@ -7,3 +7,4 @@ target
 # Package Files #
 *.war
 *.ear
+/api-keys.txt

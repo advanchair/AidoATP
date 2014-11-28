@@ -62,7 +62,7 @@ public class TickerManager implements Runnable {
 				tickerManagerClass = Class.forName(ExchangeManager.getInstance(exchangeName).getTickerManagerClass());
 //				instances.put(exchangeCurrency,(TickerManager) tickerManagerClass.getConstructor(CurrencyUnit.class, String.class).newInstance(currency,exchangeName));
 //TODO check if constructor is filled correct
-				instances.put(exchangeCurrency,(TickerManager) tickerManagerClass.getConstructor(String.class, String.class).newInstance(exchangeName,currency));
+				instances.put(exchangeCurrency,(TickerManager) tickerManagerClass.getConstructor(String.class, String.class).newInstance(currency,exchangeName));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -73,7 +73,8 @@ public class TickerManager implements Runnable {
 	public TickerManager(String currency, String exchangeName) {
 		log = LoggerFactory.getLogger(TickerManager.class);
 		this.exchangeName = exchangeName;
-		this.fileName = exchangeName+"_"+currency+".dat";
+//		this.fileName = exchangeName+"_"+currency+".dat";
+		this.fileName = exchangeName+"/"+currency+".dat";
 
 		quit = false;
 		try {

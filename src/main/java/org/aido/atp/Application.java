@@ -93,7 +93,7 @@ public class Application {
 			}
 		}
 
-		if(config.get("MtGoxApiKey", null) == null && config.get("BTC-eApiKey", null) == null && config.get("BitstampUserName", null) == null) {
+		if(config.get("BTC-eApiKey", null) == null) {
 			interview();
 		}
 
@@ -258,7 +258,7 @@ public class Application {
 		out.print("Number of MACD values used to calculate MACD Signal Line  (eg 9): ");
 		config.put("SigLineMACDSize", console.readLine());
 
-		out.print("Possible Bid/Ask Logic: ADS, EMA, SMA, VWAPCross or MACD");
+		out.println("Possible Bid/Ask Logic: ADS, EMA, SMA, VWAPCross or MACD");
 		out.print("Bid Logic: ");
 		config.put("BidLogic", console.readLine());
 

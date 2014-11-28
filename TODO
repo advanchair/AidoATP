@@ -4,6 +4,9 @@ To Do:
 -> BTC-e
 -> Cryptsy
 
+- dont stop ticker thread if "ERROR: Caught unexpected ... exception, ticker manager shutting down now!. Details are listed below." Error occurs.
+
+
 
 Original ToDo's:
 ================
@@ -13,3 +16,11 @@ Encrypt API secret key
 Investigate implementing a workround for CampBX not providing volume value in it's ticker
 Recode Arbitrage
 Implement TA-Lib
+
+
+Done:
+-----
+
+- update xchange dependencys to 2.2.0-SNAPSHOT
+- replace CurrencyUnit by String
+- write helper class for BigMoney rip off
