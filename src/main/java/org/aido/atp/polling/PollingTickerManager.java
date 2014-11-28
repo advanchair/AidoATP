@@ -81,6 +81,8 @@ public class PollingTickerManager extends TickerManager {
 			}
 		} catch (Exception e) {
 			log.error("ERROR: Caught unexpected {} exception, ticker manager shutting down now!. Details are listed below.",exchangeName);
+			log.error(e.getMessage(),exchangeName);
+			log.error(e.getLocalizedMessage(),exchangeName);
 			e.printStackTrace();
 			stop();
 		}
